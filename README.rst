@@ -2,14 +2,28 @@
 django-sortedm2m
 ================
 
-|pypi-badge| |build-status|
+.. image:: https://jazzband.co/static/img/badge.svg
+   :target: https://jazzband.co/
+   :alt: Jazzband
+
+.. image:: https://img.shields.io/pypi/v/django-sortedm2m.svg
+   :target: https://pypi.python.org/pypi/django-sortedm2m
+   :alt: PyPI Release
+
+.. image:: https://travis-ci.org/jazzband/django-sortedm2m.svg?branch=master
+   :target: https://travis-ci.org/jazzband/django-sortedm2m
+   :alt: Build Status
+
+.. image:: https://codecov.io/gh/jazzband/django-sortedm2m/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/jazzband/django-sortedm2m
+   :alt: Code coverage
 
 ``sortedm2m`` is a drop-in replacement for django's own ``ManyToManyField``.
 The provided ``SortedManyToManyField`` behaves like the original one but
 remembers the order of added relations.
 
-Usecases
-========
+Use Cases
+=========
 
 Imagine that you have a gallery model and a photo model. Usually you want a
 relation between these models so you can add multiple photos to one gallery
@@ -27,8 +41,7 @@ provided by this package as drop in replacement for django's
 Requirements
 ============
 
-**django-sortedm2m** runs on Python 2.6, 2.7, 3.2 and up. PyPy is supported as
-well. Django 1.6 and up is required.
+**django-sortedm2m** runs on Python 3.6+ and Django from 2.1 to 3.0.
 
 Usage
 =====
@@ -95,7 +108,7 @@ relationships.
     yourself. In most cases when you want to add another field, consider
     *not* using sortedm2m but use a ordinary Django ManyToManyField and
     specify `your own through model`_.
-    
+
 .. _your own through model: https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.ManyToManyField.through
 
 Migrating a ``ManyToManyField`` to be a ``SortedManyToManyField``
@@ -132,7 +145,7 @@ INSTALLED_APPS settings, like::
        'django.contrib.messages',
        'django.contrib.staticfiles',
        'django.contrib.admin',
-   
+
        'sortedm2m',
 
        '...',
@@ -162,11 +175,13 @@ Example::
 
 Contribute
 ==========
+This is a `Jazzband <https://jazzband.co>`_ project. By contributing you agree to abide by the
+`Contributor Code of Conduct <https://jazzband.co/about/conduct>`_ and follow the
+`guidelines <https://jazzband.co/about/guidelines>`_.
 
-You can find the latest development version on github_. Get there and fork it,
-file bugs or send me nice wishes.
+You can find the latest development version on Github_. Get there and fork it, file bugs or send well wishes.
 
-.. _github: http://github.com/gregmuellegger/django-sortedm2m
+.. _github: http://github.com/jazzband/django-sortedm2m
 
 Running the tests
 -----------------
@@ -177,32 +192,14 @@ the root directory of the ``django-sortedm2m`` checkout::
 
    tox
 
-However using tox will not include the tests that run against a PostgreSQL
-database. The project therefore contains a ``Vagrantfile`` that uses vagrant_
-to setup a virtual machine including a working PostgreSQL installation. To
-run the postgres tests, please `install vagrant`_ and then run::
+The tests are run against SQLite, then against PostgreSQL, then against mySQL -
+so you need to install PostgreSQL and mySQL on your dev environment, and should
+have a role/user ``sortedm2m`` set up for both PostgreSQL and mySQL.
 
-   make test-postgres
-
-This will bring up and provision the virtual machine and runs the testsuite
-against a PostgreSQL database.
-
-.. _vagrant: http://www.vagrantup.com/
-.. _install vagrant: http://www.vagrantup.com/downloads
-
-Get in touch
+Code Quality
 ------------
+This project uses `isort <https://github.com/timothycrosley/isort>`_, `pycodestyle <https://github.com/PyCQA/pycodestyle>`_,
+and `pylint <https://www.pylint.org>`_ to manage validate code quality. These validations can be run with the
+following command::
 
-Feel free to drop me a message about critique or feature requests. You can get
-in touch with me by mail_ or twitter_.
-
-.. _mail: mailto:gregor@muellegger.de
-.. _twitter: http://twitter.com/gregmuellegger
-
-.. |pypi-badge| image:: https://img.shields.io/pypi/v/django-sortedm2m.svg
-   :alt: PyPI Release
-   :target: https://pypi.python.org/pypi/django-sortedm2m
-
-.. |build-status| image:: https://travis-ci.org/gregmuellegger/django-sortedm2m.png
-   :alt: Build Status
-   :target: https://travis-ci.org/gregmuellegger/django-sortedm2m
+   tox -e quality

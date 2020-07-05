@@ -1,8 +1,28 @@
 Changelog
 =========
 
-1.5.1 (in development)
-----------------------
+3.0.0
+-----
+* `#147`_: Dropped support for Django 2.0
+* `#152`_: Dropped support for Django 1.10
+* `#152`_: Add support for Python 3.8
+* `#152`_: Add support for Django 3.0
+
+.. _#147: https://github.com/jazzband/django-sortedm2m/issues/147
+.. _#152: https://github.com/jazzband/django-sortedm2m/issues/152
+
+2.0.0
+-----
+* `#135`_: Updated README with Jazzband details, and added CONTRIBUTING.md
+* `#136`_: Dropped support for Python 2.6 and 3.3, and Django < 1.11
+* `#130`_: Added support for Python 3.7 and Django 2.0 to 2.2
+* `#130`_: Add support of custom through models (only for Django >= 2.2)
+* `#138`_: Added coverage reporting
+
+.. _#130: https://github.com/jazzband/django-sortedm2m/issues/130
+.. _#135: https://github.com/jazzband/django-sortedm2m/pull/135
+.. _#136: https://github.com/jazzband/django-sortedm2m/pull/136
+.. _#138: https://github.com/jazzband/django-sortedm2m/pull/138
 
 1.5.0
 -----
@@ -12,8 +32,8 @@ Changelog
 * `#87`_: Fix ``AlterSortedManyToManyField`` operation to support custom set
   ``_sort_field_name``.
 
-.. _#101: https://github.com/gregmuellegger/django-sortedm2m/pull/101
-.. _#87: https://github.com/gregmuellegger/django-sortedm2m/issues/87
+.. _#101: https://github.com/jazzband/django-sortedm2m/pull/101
+.. _#87: https://github.com/jazzband/django-sortedm2m/issues/87
 
 1.4.0
 -----
@@ -26,9 +46,9 @@ Changelog
   ``ManyToManyField`` instead of ``SortedManyToManyField`` from ``sortedm2m``.
   Thanks Dayne May for the patch.
 
-.. _#104: https://github.com/gregmuellegger/django-sortedm2m/pull/104
-.. _#94: https://github.com/gregmuellegger/django-sortedm2m/pull/94
-.. _#93: https://github.com/gregmuellegger/django-sortedm2m/pull/93
+.. _#104: https://github.com/jazzband/django-sortedm2m/pull/104
+.. _#94: https://github.com/jazzband/django-sortedm2m/pull/94
+.. _#93: https://github.com/jazzband/django-sortedm2m/pull/93
 
 1.3.3
 -----
@@ -36,8 +56,8 @@ Changelog
 * `#91`_ & `#92`_: Fix admin widget, when used with Django 1.10. The add a new
   item opup was not closing. Thanks to Tipuch for the patch.
 
-.. _#91: https://github.com/gregmuellegger/django-sortedm2m/issues/91
-.. _#92: https://github.com/gregmuellegger/django-sortedm2m/pull/92
+.. _#91: https://github.com/jazzband/django-sortedm2m/issues/91
+.. _#92: https://github.com/jazzband/django-sortedm2m/pull/92
 
 1.3.2
 -----
@@ -45,8 +65,8 @@ Changelog
 * `#80`_ & `#83`_: Fix ``SortedMultipleChoiceField.clean`` if the validated
   value is ``None``. Thanks to Alex Mannhold for the patch.
 
-.. _#80: https://github.com/gregmuellegger/django-sortedm2m/issues/80
-.. _#83: https://github.com/gregmuellegger/django-sortedm2m/pull/83
+.. _#80: https://github.com/jazzband/django-sortedm2m/issues/80
+.. _#83: https://github.com/jazzband/django-sortedm2m/pull/83
 
 1.3.1
 -----
@@ -54,8 +74,8 @@ Changelog
 * `#57`_ & `#81`_: Fix add related object popup error prevents operation when
   no related objects already exist. Thanks to Vadim Sikora for the fix.
 
-.. _#57: https://github.com/gregmuellegger/django-sortedm2m/issue/57
-.. _#81: https://github.com/gregmuellegger/django-sortedm2m/pull/81
+.. _#57: https://github.com/jazzband/django-sortedm2m/issue/57
+.. _#81: https://github.com/jazzband/django-sortedm2m/pull/81
 
 1.3.0
 -----
@@ -71,8 +91,8 @@ Changelog
 * `#76`_: Add support for to_field_name to SortedMultipleChoiceField. Thanks
   to Conrad Kramer for the patch.
 
-.. _#76: https://github.com/gregmuellegger/django-sortedm2m/pull/76
-.. _#79: https://github.com/gregmuellegger/django-sortedm2m/pull/79
+.. _#76: https://github.com/jazzband/django-sortedm2m/pull/76
+.. _#79: https://github.com/jazzband/django-sortedm2m/pull/79
 
 1.2.2
 -----
@@ -80,7 +100,7 @@ Changelog
 * `#75`_: Fix "add another" admin popup. It didn't refresh the list of items in Django
   1.8+. Thanks to Vadim Sikora for the patch.
 
-.. _#75: https://github.com/gregmuellegger/django-sortedm2m/pull/75
+.. _#75: https://github.com/jazzband/django-sortedm2m/pull/75
 
 1.2.1
 -----
@@ -100,7 +120,7 @@ Changelog
   ``SortedCheckboxSelectMultiple``. Thanks to Kirill Ermolov for the
   patch.
 
-.. _#71: https://github.com/gregmuellegger/django-sortedm2m/issues/71
+.. _#71: https://github.com/jazzband/django-sortedm2m/issues/71
 
 1.1.1
 -----
@@ -108,7 +128,7 @@ Changelog
 * `#70`_: CSS fix for Django 1.9 new admin design. Thanks to Maarten Draijer
   for the patch.
 
-.. _#70: https://github.com/gregmuellegger/django-sortedm2m/pull/70
+.. _#70: https://github.com/jazzband/django-sortedm2m/pull/70
 
 1.1.0
 -----
@@ -119,10 +139,10 @@ Changelog
   decided by Django's DB router (with the ``allow_migrate_model`` method).
   Thanks to @hstanev for the patch.
 
-.. _#59: https://github.com/gregmuellegger/django-sortedm2m/pull/59
-.. _#65: https://github.com/gregmuellegger/django-sortedm2m/pull/65
-.. _#67: https://github.com/gregmuellegger/django-sortedm2m/pull/67
-.. _#68: https://github.com/gregmuellegger/django-sortedm2m/pull/68
+.. _#59: https://github.com/jazzband/django-sortedm2m/pull/59
+.. _#65: https://github.com/jazzband/django-sortedm2m/pull/65
+.. _#67: https://github.com/jazzband/django-sortedm2m/pull/67
+.. _#68: https://github.com/jazzband/django-sortedm2m/pull/68
 
 1.0.2
 -----
@@ -133,7 +153,7 @@ Changelog
   added objects will be in order. Thanks to Scott Kyle for the report and
   patch.
 
-.. _#56: https://github.com/gregmuellegger/django-sortedm2m/pull/56
+.. _#56: https://github.com/jazzband/django-sortedm2m/pull/56
 
 1.0.1
 -----
@@ -141,7 +161,7 @@ Changelog
 * Performance fix for sorted m2m admin widget. See `#54`_ for details. Thanks
   to Jonathan Liuti for fixing this.
 
-.. _#54: https://github.com/gregmuellegger/django-sortedm2m/pull/54
+.. _#54: https://github.com/jazzband/django-sortedm2m/pull/54
 
 1.0.0
 -----
@@ -163,7 +183,7 @@ Changelog
   ``sort_value_field_name`` in Django 1.7 migrations. Thanks to Christian
   Kohlstedde for the patch.
 
-.. _#49: https://github.com/gregmuellegger/django-sortedm2m/issues/49
+.. _#49: https://github.com/jazzband/django-sortedm2m/issues/49
 
 0.9.5
 -----
@@ -171,7 +191,7 @@ Changelog
 * Fixing ``setup.py`` when run on a system that does not use UTF-8 as default
   encoding. See `#48`_ for details. Thanks to Richard Mitchell for the patch.
 
-.. _#48: https://github.com/gregmuellegger/django-sortedm2m/pull/48
+.. _#48: https://github.com/jazzband/django-sortedm2m/pull/48
 
 0.9.4
 -----
@@ -231,7 +251,7 @@ Changelog
 * Correct escaping of *for* attribute in label for the sortedm2m widget. Thanks
   to Mystic-Mirage for the report and fix.
 
-0.6.0 
+0.6.0
 -----
 
 * Python 3 support!

@@ -1,5 +1,2 @@
-try:
-    from unittest import skipIf
-except ImportError:
-    # Will raise deprecation warning in Django >= 1.8
-    from django.utils.unittest import skipIf
+def m2m_set(instance, field_name, objs):
+    getattr(instance, field_name).set(objs)

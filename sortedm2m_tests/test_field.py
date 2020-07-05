@@ -1,25 +1,17 @@
-# -*- coding: utf-8 -*-
+from unittest.case import skipIf
+
 import django
+from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
-from django.db.models.fields import FieldDoesNotExist
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils import six
+from django.utils.encoding import force_str
 
 from sortedm2m.compat import get_field, get_rel
+from sortedm2m.fields import SORT_VALUE_FIELD_NAME
 
-from .models import (
-    Book, Shelf, DoItYourselfShelf, Store, MessyStore, SelfReference, BaseBookThrough)
-
-
-str_ = six.text_type
-
-
-def m2m_set(instance, field_name, objs):
-    if django.VERSION > (1, 9):
-        getattr(instance, field_name).set(objs)
-    else:
-        setattr(instance, field_name, objs)
+from .compat import m2m_set
+from .models import Book, DoItYourselfShelf, SelfReference, Shelf, Store, TaggedDoItYourselfShelf
 
 
 class TestSortedManyToManyField(TestCase):
@@ -68,7 +60,7 @@ class TestSortedManyToManyField(TestCase):
         shelf.books.add(self.books[2].pk)
         self.assertEqual(list(shelf.books.all()), [self.books[2]])
 
-        shelf.books.add(self.books[5].pk, str_(self.books[1].pk))
+        shelf.books.add(self.books[5].pk, force_str(self.books[1].pk))
         self.assertEqual(list(shelf.books.all()), [
             self.books[2],
             self.books[5],
@@ -77,7 +69,7 @@ class TestSortedManyToManyField(TestCase):
         shelf.books.clear()
         self.assertEqual(list(shelf.books.all()), [])
 
-        shelf.books.add(self.books[3].pk, self.books[1], str_(self.books[2].pk))
+        shelf.books.add(self.books[3].pk, self.books[1], force_str(self.books[2].pk))
         self.assertEqual(list(shelf.books.all()), [
             self.books[3],
             self.books[1],
@@ -121,7 +113,7 @@ class TestSortedManyToManyField(TestCase):
             self.books[5],
             self.books[2]])
 
-        m2m_set(shelf, "books", [str_(self.books[8].pk)])
+        m2m_set(shelf, "books", [force_str(self.books[8].pk)])
         self.assertEqual(list(shelf.books.all()), [self.books[8]])
 
     def test_remove_items(self):
@@ -153,7 +145,7 @@ class TestSortedManyToManyField(TestCase):
             self.books[2],
             self.books[4]])
 
-        shelf.books.remove(self.books[2], str_(self.books[4].pk))
+        shelf.books.remove(self.books[2], force_str(self.books[4].pk))
         self.assertEqual(list(shelf.books.all()), [])
 
 #    def test_add_relation_by_hand(self):
@@ -178,7 +170,6 @@ class TestSortedManyToManyField(TestCase):
 
         shelf = self.model.objects.filter(pk=shelf.pk).prefetch_related('books')[0]
         queries_num = len(connection.queries)
-        name = shelf.books.all()[0].name
         self.assertEqual(queries_num, len(connection.queries))
 
     def test_prefetch_related_sorting(self):
@@ -187,17 +178,19 @@ class TestSortedManyToManyField(TestCase):
         m2m_set(shelf, "books", books)
 
         shelf = self.model.objects.filter(pk=shelf.pk).prefetch_related('books')[0]
+
         def get_ids(queryset):
             return [obj.id for obj in queryset]
+
         self.assertEqual(get_ids(shelf.books.all()), get_ids(books))
 
 
 class TestStringReference(TestSortedManyToManyField):
-    '''
+    """
     Test the same things as ``TestSortedManyToManyField`` but using a model
     that using a string to reference the relation where the m2m field should
     point to.
-    '''
+    """
     model = Store
 
 
@@ -212,8 +205,6 @@ class TestCustomBaseClass(TestSortedManyToManyField):
         self.assertEqual(str(instance), "Relationship to {0}".format(instance.book.name))
 
     def test_custom_sort_value_field_name(self):
-        from sortedm2m.fields import SORT_VALUE_FIELD_NAME
-
         self.assertEqual(len(self.model._meta.many_to_many), 1)
         sortedm2m = self.model._meta.many_to_many[0]
         intermediate_model = get_rel(sortedm2m).through
@@ -241,6 +232,39 @@ class TestCustomBaseClass(TestSortedManyToManyField):
             self.assertEqual(instance2.diy_sort_number, 20)
 
 
+@skipIf(django.VERSION < (2, 2), 'RelatedManager._add_items() has new through_defaults argument in Django >= 2.2')
+class TestCustomThroughClass(TestSortedManyToManyField):
+    model = TaggedDoItYourselfShelf
+
+    def test_base_class_str(self):
+        shelf = self.model.objects.create()
+        shelf.books.add(self.books[0])
+        through_model = shelf.books.through
+        instance = through_model.objects.all()[0]
+        self.assertEqual(str(instance), "Relationship to {0} tagged as <>".format(instance.book.name))
+
+    def test_through_defaults(self):
+        shelf = self.model.objects.create()
+        shelf.books.add(*self.books[3:5], through_defaults={'tags': 'A'})
+        shelf.books.add(self.books[2])
+        shelf.books.add(*self.books[:2], through_defaults={'tags': 'B'})
+
+        # ordering is kept
+        self.assertEqual(list(shelf.books.all()),
+                         self.books[3:5] + [self.books[2]] + self.books[:2])
+
+        through_model = shelf.books.through
+        rels = [(o.book_id, o.tags_diy_sort_number, o.tags) for o in through_model.objects.all()]
+
+        self.assertEqual(rels, [
+            (self.books[3].pk, 1, 'A'),
+            (self.books[4].pk, 2, 'A'),
+            (self.books[2].pk, 3, ''),
+            (self.books[0].pk, 4, 'B'),
+            (self.books[1].pk, 5, 'B'),
+        ])
+
+
 class TestSelfReference(TestCase):
     def test_self_adding(self):
         s1 = SelfReference.objects.create()
@@ -250,15 +274,4 @@ class TestSelfReference(TestCase):
         s1.me.add(s3)
         s1.me.add(s4, s2)
 
-        self.assertEqual(list(s1.me.all()), [s3,s4,s2])
-
-
-class TestDjangoManyToManyFieldNotAvailableThroughSortedM2M(TestCase):
-    @staticmethod
-    def _import_django_many_to_many_through_sortedm2m():
-        from sortedm2m.fields import ManyToManyField
-
-    def test_many_to_many_field_not_available(self):
-        self.assertRaises(
-            ImportError,
-            self._import_django_many_to_many_through_sortedm2m)
+        self.assertEqual(list(s1.me.all()), [s3, s4, s2])

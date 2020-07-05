@@ -1,64 +1,47 @@
+dist: bionic
 language: python
-sudo: false
+cache: pip
+services:
+- postgresql
+- mysql
+python:
+- 3.6
+- 3.7
+- 3.8
+install: pip install -U codecov tox tox-travis
+addons:
+  postgresql: '10'
 matrix:
+  fast_finish: true
   include:
-    - { python: 2.6, env: TOXENV=py26-15 }
-    - { python: 2.6, env: TOXENV=py26-16 }
-    - { python: 2.7, env: TOXENV=py27-15 }
-    - { python: 2.7, env: TOXENV=py27-16 }
-    - { python: 2.7, env: TOXENV=py27-17 }
-    - { python: 2.7, env: TOXENV=py27-18 }
-    - { python: 2.7, env: TOXENV=py27-18-postgres }
-    - { python: 2.7, env: TOXENV=py27-18-mysql }
-    - { python: 2.7, env: TOXENV=py27-19 }
-    - { python: 2.7, env: TOXENV=py27-110 }
-    - { python: 2.7, env: TOXENV=py27-111 }
-    - { python: pypy, env: TOXENV=pypy-15 }
-    - { python: pypy, env: TOXENV=pypy-16 }
-    - { python: pypy, env: TOXENV=pypy-17 }
-    - { python: pypy, env: TOXENV=pypy-18 }
-    - { python: pypy, env: TOXENV=pypy-18-mysql }
-    - { python: pypy, env: TOXENV=pypy-19 }
-    - { python: pypy, env: TOXENV=pypy-110 }
-    - { python: pypy, env: TOXENV=pypy-111 }
-    - { python: 3.3, env: TOXENV=py33-16 }
-    - { python: 3.3, env: TOXENV=py33-17 }
-    - { python: 3.3, env: TOXENV=py33-18 }
-    - { python: 3.4, env: TOXENV=py34-16 }
-    - { python: 3.4, env: TOXENV=py34-17 }
-    - { python: 3.4, env: TOXENV=py34-18 }
-    - { python: 3.4, env: TOXENV=py34-19 }
-    - { python: 3.4, env: TOXENV=py34-110 }
-    - { python: 3.4, env: TOXENV=py34-111 }
-    - { python: 3.5, env: TOXENV=py35-18 }
-    - { python: 3.5, env: TOXENV=py35-18-postgres }
-    - { python: 3.5, env: TOXENV=py35-19 }
-    - { python: 3.5, env: TOXENV=py35-110 }
-    - { python: 3.5, env: TOXENV=py35-111 }
-    - { python: 3.6, env: TOXENV=py36-111 }
-    - { python: 3.6, env: TOXENV=py36-master-postgres }
-  allow_failures:
-    - env: TOXENV=py36-master-postgres
-before_install:
-  - export PIP_USE_MIRRORS=true
-  - export DJANGO_SETTINGS_MODULE=test_settings
-  # Postgres setup.
-  - # Password is 'sortedm2m'
-  - psql -c "CREATE ROLE sortedm2m PASSWORD 'md5ba287bde612ca41b14776ec8f8dfdaa9' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
-  - psql -c "CREATE DATABASE sortedm2m OWNER sortedm2m;" -U postgres
-  # MySQL setup.
-  - echo "CREATE USER 'sortedm2m'@'localhost' IDENTIFIED BY 'sortedm2m';" | mysql -u root
-  - echo "GRANT ALL PRIVILEGES ON *.* TO 'sortedm2m'@'localhost' WITH GRANT OPTION;" | mysql -u root
-install:
-  - pip install tox
-script:
-  - tox -v
+  - python: 3.8
+    env: TOXENV=quality
+  - python: 3.8
+    env: TOXENV=dist-validation
+before_script:
+- export PIP_USE_MIRRORS=true
+- export DJANGO_SETTINGS_MODULE=test_settings
+- pg_lsclusters
+# Postgres setup.
+# Password is 'sortedm2m'
+- psql -c "CREATE ROLE sortedm2m PASSWORD 'md5ba287bde612ca41b14776ec8f8dfdaa9' SUPERUSER
+  CREATEDB CREATEROLE INHERIT LOGIN;" -U postgres
+- psql -c "CREATE DATABASE sortedm2m OWNER sortedm2m;" -U postgres
+# MySQL setup.
+- echo "CREATE USER 'sortedm2m'@'localhost' IDENTIFIED BY 'sortedm2m';" | mysql -u
+  root
+- echo "GRANT ALL PRIVILEGES ON *.* TO 'sortedm2m'@'localhost' WITH GRANT OPTION;"
+  | mysql -u root
+script: tox -v
+after_success: codecov
 deploy:
   provider: pypi
-  user: gremu
+  user: jazzband
+  distributions: sdist bdist_wheel
+  server: https://jazzband.co/projects/django-sortedm2m/upload
   password:
-    secure: jyiiGrkjiXhyc5rtvE6o/+z5XlkgQhzFX1LvgHlKMjk+HtRkRYm3jtUHxd0ZbuRNWwo6DbxmFWW7xiGc0uqrpRiH1vyuxA4FvTIO8fdxUmGwiTg8/IObuXAaXEVkfoxPZnLimKIBbFq6OXygwum32jfNCnEWiOu3hSfj1R5sRPw=
+    secure: TfN/ENym4GrxYSno4FnrK9qXdceBEVU6k71OS2GYkiEmcwZMiAeXDivhddVgHswHEGxJnik6iu26EJUH4euXm0GZYI/1h0ihXQSWIfD8FnouhhlDpBmuW6BlvyDY7j9flfPDIc+LXseP3fel/ctCZibTdl5nHbaUIEGM6KTeRnE=
   on:
     tags: true
-    repo: gregmuellegger/django-sortedm2m
-    condition: "$TOX_ENV = py35-18"
+    repo: jazzband/django-sortedm2m
+    python: 3.7
